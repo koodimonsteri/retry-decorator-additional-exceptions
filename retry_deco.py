@@ -1,7 +1,6 @@
 import time
 from requests import HTTPError, ConnectionError
 from functools import wraps
-from typing import Tuple
 
 
 def retry(retry_on_exception, max_retries=3, delay_seconds=1):
@@ -23,26 +22,25 @@ def retry(retry_on_exception, max_retries=3, delay_seconds=1):
     return decorator
 
 
-class TooManyRequest(HTTPError):
+class MyError(HTTPError):
     pass
 
 
 class MyAPI:
 
     def __init__(self):
-        self.name = 'Testiapi'
+        self.name = 'MyAPI'
 
     @retry((ConnectionError,))
     def _make_request(self, url, retry_exceptions=None):
         print('making request to:', url)
-        raise TooManyRequest()
-        #return url
+        raise MyError()
     
     def get_data(self):
         return self._make_request('testi')
     
     def get_data2(self):
-        return self._make_request('testi2', retry_exceptions=(TooManyRequest,))
+        return self._make_request('testi2', retry_exceptions=(MyError,))
 
 
 def main():
